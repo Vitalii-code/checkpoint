@@ -6,7 +6,7 @@
 
 import { getUserIds } from "./storage.js";
 
-userSelector = document.getElementById("userSelector");
+const userSelector = document.getElementById("userSelector");
 
 window.onload = function () {
   const userIds = getUserIds();

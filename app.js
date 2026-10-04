@@ -1,61 +1,47 @@
-import { getUserIds, getData, setData } from './storage.js';
-import { 
-  sortBookmarksReverseChronological, 
-  createBookmarkObject, 
-  incrementLikeCount 
-} from './helper.js';
+import { getUserIds, getData, setData } from "./storage.js";
+import {
+  sortBookmarksReverseChronological,
+  createBookmarkObject,
+  incrementLikeCount,
+} from "./helper.js";
 
-const userSelect = document.getElementById('user-select');
-const bookmarkForm = document.getElementById('bookmark-form');
-const bookmarksContainer = document.getElementById('bookmarks-container');
+const bookmarkForm = document.getElementById("bookmark-form");
+const bookmarksContainer = document.getElementById("bookmarks-container");
 const table = document.getElementById("display");
 const tbodyElement = document.getElementById("tableBody");
 
-
-// Initialize user dropdown options
-function initUserSelect() {
-  const userIds = getUserIds();
-  userSelect.innerHTML = userIds
-    .map(id => `<option value="${id}">User ${id}</option>`)
-    .join('');
-  
-  userSelect.addEventListener('change', renderBookmarks);
-}
+let selectedUserId = null;
 
 // Render bookmarks for the selected user
 function renderBookmarks() {
-  const selectedUserId = userSelect.value;
   const bookmarks = getData(selectedUserId) || [];
 
   if (bookmarks.length === 0) {
-    bookmarksContainer.innerHTML = '<p>No bookmarks found for this user.</p>';
+    bookmarksContainer.innerHTML = "<p>No bookmarks found for this user.</p>";
     tbodyElement.innerHTML = "";
     return;
   }
 
   const sortedBookmarks = sortBookmarksReverseChronological(bookmarks);
 
-  bookmarksContainer.innerHTML = '';
+  bookmarksContainer.innerHTML = "";
   tbodyElement.innerHTML = "";
 
-
-  sortedBookmarks.forEach(bookmark => {
+  sortedBookmarks.forEach((bookmark) => {
     let row = tbodyElement.insertRow(-1);
 
-    let URLCell = row.insertCell(0);    
+    let URLCell = row.insertCell(0);
 
     // URL hyperlink
-    const titleLink = document.createElement('a');
+    const titleLink = document.createElement("a");
     titleLink.href = bookmark.url;
     titleLink.textContent = bookmark.title;
-    titleLink.target = '_blank';
-    titleLink.rel = 'noopener noreferrer';
-
+    titleLink.target = "_blank";
+    titleLink.rel = "noopener noreferrer";
 
     URLCell.innerHTML = "<a href='" + titleLink + "'>" + titleLink + "</a>";
 
     // Description & Date
-
 
     let titleCell = row.insertCell(1);
     titleCell.textContent = bookmark.description;
@@ -67,22 +53,27 @@ function renderBookmarks() {
     timeCell.textContent = `Added: ${new Date(bookmark.createdAt).toLocaleString()}`;
 
     // Copy to Clipboard Button
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copy URL';
-    copyBtn.type = 'button';
-    copyBtn.addEventListener('click', () => {
+    const copyBtn = document.createElement("button");
+    copyBtn.textContent = "Copy URL";
+    copyBtn.type = "button";
+    copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(bookmark.url);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = 'Copy URL'; }, 2000);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => {
+        copyBtn.textContent = "Copy URL";
+      }, 2000);
     });
 
     // Like Button
-    const likeBtn = document.createElement('button');
+    const likeBtn = document.createElement("button");
     likeBtn.textContent = `Like (${bookmark.likes || 0})`;
-    likeBtn.type = 'button';
-    likeBtn.addEventListener('click', () => {
+    likeBtn.type = "button";
+    likeBtn.addEventListener("click", () => {
       const currentBookmarks = getData(selectedUserId) || [];
-      const updatedBookmarks = incrementLikeCount(currentBookmarks, bookmark.id);
+      const updatedBookmarks = incrementLikeCount(
+        currentBookmarks,
+        bookmark.id,
+      );
       setData(selectedUserId, updatedBookmarks);
       renderBookmarks();
     });
@@ -92,19 +83,18 @@ function renderBookmarks() {
 
     let likeCell = row.insertCell(5);
     likeCell.append(likeBtn);
-
   });
-
 }
 
 // Handle Form Submission
-bookmarkForm.addEventListener('submit', (e) => {
+bookmarkForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const selectedUserId = userSelect.value;
-  const url = document.getElementById('bookmark-url').value.trim();
-  const title = document.getElementById('bookmark-title').value.trim();
-  const description = document.getElementById('bookmark-description').value.trim();
+  const url = document.getElementById("bookmark-url").value.trim();
+  const title = document.getElementById("bookmark-title").value.trim();
+  const description = document
+    .getElementById("bookmark-description")
+    .value.trim();
 
   const newBookmark = createBookmarkObject(url, title, description);
   const currentBookmarks = getData(selectedUserId) || [];
@@ -113,9 +103,16 @@ bookmarkForm.addEventListener('submit', (e) => {
   setData(selectedUserId, currentBookmarks);
   bookmarkForm.reset();
   renderBookmarks();
-
 });
 
 // Initial Setup
-initUserSelect();
-renderBookmarks();
+window.onload = function () {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.has("userId")) {
+    selectedUserId = params.get("userId");
+    renderBookmarks();
+  } else {
+    throw new Error("userId not found, please go back to the main page");
+  }
+};

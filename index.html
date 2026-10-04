@@ -1,9 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <script type="module" src="script.js"></script>
   </head>
   <body>
+    <form action="user.html" method="get">
+      <label for="userSelector">Select a user:</label>
+      <select required name="userId" id="userSelector">
+        <option value="" disabled selected>Please select a user</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+      </select>
+      <button type="submit">Login</button>
+    </form>
   </body>
 </html>
-

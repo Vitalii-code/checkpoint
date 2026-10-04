@@ -6,13 +6,16 @@
 
 import { getUserIds } from "./storage.js";
 
+userSelector = document.getElementById("userSelector");
+
 window.onload = function () {
-  const users = getUserIds();
+  const userIds = getUserIds();
 
-  const params = new URLSearchParams(window.location.search);
-
-  if (params.has("userId")) {
-    const userId = params.get("userId");
-    console.log(userId);
+  // populate selector with user ids
+  for (const userId of userIds) {
+    const option = document.createElement("option");
+    option.value = userId;
+    option.textContent = userId;
+    userSelector.appendChild(option);
   }
 };

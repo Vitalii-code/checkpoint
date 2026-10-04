@@ -1,16 +1,22 @@
 <!doctype html>
-<html>
+<html lang="en">
+  <meta charset="UTF-8" />
+
   <head>
+    <title>Bookmark Sharing App User Select</title>
+
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="module" src="script.js"></script>
   </head>
   <body>
-    <form action="addbookmark.html" method="get">
-      <label for="userSelector">Select a user:</label>
-      <select required name="userId" id="userSelector">
-        <option value="" disabled selected>Please select a user</option>
-      </select>
-      <button type="submit">Login</button>
-    </form>
+    <main>
+      <form action="addbookmark.html" method="get">
+        <label for="userSelector">Select a user:</label>
+        <select required name="userId" id="userSelector">
+          <option value="" disabled selected>Please select a user</option>
+        </select>
+        <button type="submit">Login</button>
+      </form>
+    </main>
   </body>
 </html>

@@ -1,0 +1,121 @@
+import { getUserIds, getData, setData } from './storage.js';
+import { 
+  sortBookmarksReverseChronological, 
+  createBookmarkObject, 
+  incrementLikeCount 
+} from './helper.js';
+
+const userSelect = document.getElementById('user-select');
+const bookmarkForm = document.getElementById('bookmark-form');
+const bookmarksContainer = document.getElementById('bookmarks-container');
+const table = document.getElementById("display");
+const tbodyElement = document.getElementById("tableBody");
+
+
+// Initialize user dropdown options
+function initUserSelect() {
+  const userIds = getUserIds();
+  userSelect.innerHTML = userIds
+    .map(id => `<option value="${id}">User ${id}</option>`)
+    .join('');
+  
+  userSelect.addEventListener('change', renderBookmarks);
+}
+
+// Render bookmarks for the selected user
+function renderBookmarks() {
+  const selectedUserId = userSelect.value;
+  const bookmarks = getData(selectedUserId) || [];
+
+  if (bookmarks.length === 0) {
+    bookmarksContainer.innerHTML = '<p>No bookmarks found for this user.</p>';
+    tbodyElement.innerHTML = "";
+    return;
+  }
+
+  const sortedBookmarks = sortBookmarksReverseChronological(bookmarks);
+
+  bookmarksContainer.innerHTML = '';
+  tbodyElement.innerHTML = "";
+
+
+  sortedBookmarks.forEach(bookmark => {
+    let row = tbodyElement.insertRow(-1);
+
+    let URLCell = row.insertCell(0);    
+
+    // URL hyperlink
+    const titleLink = document.createElement('a');
+    titleLink.href = bookmark.url;
+    titleLink.textContent = bookmark.title;
+    titleLink.target = '_blank';
+    titleLink.rel = 'noopener noreferrer';
+
+
+    URLCell.innerHTML = "<a href='" + titleLink + "'>" + titleLink + "</a>";
+
+    // Description & Date
+
+
+    let titleCell = row.insertCell(1);
+    titleCell.textContent = bookmark.description;
+
+    let descCell = row.insertCell(2);
+    descCell.textContent = bookmark.description;
+
+    let timeCell = row.insertCell(3);
+    timeCell.textContent = `Added: ${new Date(bookmark.createdAt).toLocaleString()}`;
+
+    // Copy to Clipboard Button
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = 'Copy URL';
+    copyBtn.type = 'button';
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(bookmark.url);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy URL'; }, 2000);
+    });
+
+    // Like Button
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = `Like (${bookmark.likes || 0})`;
+    likeBtn.type = 'button';
+    likeBtn.addEventListener('click', () => {
+      const currentBookmarks = getData(selectedUserId) || [];
+      const updatedBookmarks = incrementLikeCount(currentBookmarks, bookmark.id);
+      setData(selectedUserId, updatedBookmarks);
+      renderBookmarks();
+    });
+
+    let copyCell = row.insertCell(4);
+    copyCell.append(copyBtn);
+
+    let likeCell = row.insertCell(5);
+    likeCell.append(likeBtn);
+
+  });
+
+}
+
+// Handle Form Submission
+bookmarkForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const selectedUserId = userSelect.value;
+  const url = document.getElementById('bookmark-url').value.trim();
+  const title = document.getElementById('bookmark-title').value.trim();
+  const description = document.getElementById('bookmark-description').value.trim();
+
+  const newBookmark = createBookmarkObject(url, title, description);
+  const currentBookmarks = getData(selectedUserId) || [];
+  currentBookmarks.push(newBookmark);
+
+  setData(selectedUserId, currentBookmarks);
+  bookmarkForm.reset();
+  renderBookmarks();
+
+});
+
+// Initial Setup
+initUserSelect();
+renderBookmarks();

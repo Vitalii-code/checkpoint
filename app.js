@@ -1,4 +1,4 @@
-import { getUserIds, getData, setData } from "./storage.js";
+import { getData, setData } from "./storage.js";
 import {
   sortBookmarksReverseChronological,
   createBookmarkObject,
@@ -7,7 +7,6 @@ import {
 
 const bookmarkForm = document.getElementById("bookmark-form");
 const bookmarksContainer = document.getElementById("bookmarks-container");
-const table = document.getElementById("display");
 const tbodyElement = document.getElementById("tableBody");
 
 let selectedUserId = null;

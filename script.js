@@ -6,7 +6,16 @@
 
 import { getUserIds } from "./storage.js";
 
+const userSelector = document.getElementById("userSelector");
+
 window.onload = function () {
-  const users = getUserIds();
-  document.querySelector("body").innerText = `There are ${users.length} users`;
+  const userIds = getUserIds();
+
+  // populate selector with user ids
+  for (const userId of userIds) {
+    const option = document.createElement("option");
+    option.value = userId;
+    option.textContent = userId;
+    userSelector.appendChild(option);
+  }
 };

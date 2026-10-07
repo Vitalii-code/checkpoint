@@ -11,9 +11,14 @@ const tbodyElement = document.getElementById("tableBody");
 
 let selectedUserId = null;
 
+function getBookmarks() {
+  const data = getData(selectedUserId);
+  return Array.isArray(data) ? data : [];
+}
+
 // Render bookmarks for the selected user
 function renderBookmarks() {
-  const bookmarks = getData(selectedUserId) || [];
+  const bookmarks = getBookmarks();
 
   if (bookmarks.length === 0) {
     bookmarksContainer.innerHTML = "<p>No bookmarks found for this user.</p>";
@@ -65,7 +70,7 @@ function renderBookmarks() {
     likeBtn.textContent = `Like (${bookmark.likes || 0})`;
     likeBtn.type = "button";
     likeBtn.addEventListener("click", () => {
-      const currentBookmarks = getData(selectedUserId) || [];
+      const currentBookmarks = getBookmarks();
       const updatedBookmarks = incrementLikeCount(
         currentBookmarks,
         bookmark.id,
@@ -93,7 +98,7 @@ bookmarkForm.addEventListener("submit", (e) => {
     .value.trim();
 
   const newBookmark = createBookmarkObject(url, title, description);
-  const currentBookmarks = getData(selectedUserId) || [];
+  const currentBookmarks = getBookmarks();
   currentBookmarks.push(newBookmark);
 
   setData(selectedUserId, currentBookmarks);

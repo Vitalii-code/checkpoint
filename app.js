@@ -29,26 +29,23 @@ function renderBookmarks() {
   sortedBookmarks.forEach((bookmark) => {
     let row = tbodyElement.insertRow(-1);
 
+    // URL hyperlink and title
     let URLCell = row.insertCell(0);
 
-    // URL hyperlink
     const titleLink = document.createElement("a");
     titleLink.href = bookmark.url;
     titleLink.textContent = bookmark.title;
     titleLink.target = "_blank";
     titleLink.rel = "noopener noreferrer";
 
-    URLCell.innerHTML = "<a href='" + titleLink + "'>" + titleLink + "</a>";
+    URLCell.append(titleLink);
 
-    // Description & Date
-
-    let titleCell = row.insertCell(1);
-    titleCell.textContent = bookmark.description;
-
-    let descCell = row.insertCell(2);
+    // Description
+    let descCell = row.insertCell(1);
     descCell.textContent = bookmark.description;
 
-    let timeCell = row.insertCell(3);
+    // Date
+    let timeCell = row.insertCell(2);
     timeCell.textContent = `Added: ${new Date(bookmark.createdAt).toLocaleString()}`;
 
     // Copy to Clipboard Button
@@ -77,10 +74,10 @@ function renderBookmarks() {
       renderBookmarks();
     });
 
-    let copyCell = row.insertCell(4);
+    let copyCell = row.insertCell(3);
     copyCell.append(copyBtn);
 
-    let likeCell = row.insertCell(5);
+    let likeCell = row.insertCell(4);
     likeCell.append(likeBtn);
   });
 }
